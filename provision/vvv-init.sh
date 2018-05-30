@@ -9,7 +9,7 @@ WP_TYPE=`get_config_value 'wp_type' "single"`
 
 REPO_DOMAIN=`get_config_value 'repo_domain' ""`
 REPO_KEY=`get_config_value 'repo_key' ""`
-REPO_CONTENT=`get_config_value 'repo_domain' ""`
+REPO_CONTENT=`get_config_value 'repo_content' ""`
 DB_NAME=`get_config_value 'db_name' ""`
 
 echo -e "\nSetting private key to access repo."
@@ -17,9 +17,9 @@ noroot cp /srv/config/certs-config/${REPO_KEY} /home/vagrant/.ssh/id_rsa
 noroot chmod 600 /home/vagrant/.ssh/id_rsa
 
 echo -e "\nSetting WP core."
-noroot wp core download --path="${VM_DIR}" --allow-root
+noroot wp core download --path="${VM_DIR}/public_html" --allow-root
 echo -e "\nCreating WP config file."
-noroot wp config create --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet --path="${VM_DIR}" --extra-php <<PHP
+noroot wp config create --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet --path="${VM_DIR}/public_html" --extra-php <<PHP
 define( 'WP_DEBUG', false );
 PHP
 
@@ -29,7 +29,7 @@ if [[ ! "$REPO_DOMAIN" == '' ]]; then
 fi
 
 echo -e "\nGetting code from repo."	
-cd ${VM_DIR}
+cd ${VM_DIR}/public_html
 noroot git init
 noroot git remote add origin ${REPO_CONTENT}
 noroot git fetch
