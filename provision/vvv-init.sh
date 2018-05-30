@@ -7,6 +7,35 @@ SITE_TITLE=`get_config_value 'site_title' "${DOMAIN}"`
 WP_VERSION=`get_config_value 'wp_version' 'latest'`
 WP_TYPE=`get_config_value 'wp_type' "single"`
 
+REPO_DOMAIN=`get_config_value 'repo_domain' ""`
+REPO_KEY=`get_config_value 'repo_key' ""`
+REPO_CONTENT=`get_config_value 'repo_domain' ""`
+DB_NAME=`get_config_value 'db_name' ""`
+
+echo -e "\nSetting private key to access repo."
+noroot cp /srv/config/certs-config/${REPO_KEY} /home/vagrant/.ssh/id_rsa
+noroot chmod 600 /home/vagrant/.ssh/id_rsa
+
+echo -e "\nSetting WP core."
+noroot wp core download --path="${VM_DIR}" --allow-root
+echo -e "\nCreating WP config file."
+noroot wp config create --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet --path="${VM_DIR}" --extra-php <<PHP
+define( 'WP_DEBUG', false );
+PHP
+
+echo -e "\nIncluding repo into known hosts."
+if [[ ! "$REPO_DOMAIN" == '' ]]; then
+	noroot ssh-keyscan -t rsa "$REPO_DOMAIN" >> /etc/ssh/ssh_known_hosts
+fi
+
+echo -e "\nGetting code from repo."	
+cd ${VM_DIR}
+noroot git init
+noroot git remote add origin ${REPO_CONTENT}
+noroot git fetch
+noroot git reset --hard origin/master  
+
+
 echo -e "\nCreating database '${DB_NAME}' (if it's not already there)"
 mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
 mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO wp@localhost IDENTIFIED BY 'wp';"
