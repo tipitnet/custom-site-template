@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 # Provision WordPress Stable
-
 DOMAIN=`get_primary_host "${VVV_SITE_NAME}".test`
 DOMAINS=`get_hosts "${DOMAIN}"`
-SITE_TITLE=`get_config_value 'site_title' "${DOMAIN}"`
-WP_VERSION=`get_config_value 'wp_version' 'latest'`
-WP_TYPE=`get_config_value 'wp_type' "single"`
-
-REPO_DOMAIN=`get_config_value 'repo_domain' ""`
-REPO_KEY=`get_config_value 'repo_key' ""`
-REPO_CONTENT=`get_config_value 'repo_content' ""`
-DB_NAME=`get_config_value 'db_name' ""`
+REPO_DOMAIN=`get_config_value 'repo_domain' ''`
+REPO_KEY=`get_config_value 'repo_key' ''`
+REPO_CONTENT=`get_config_value 'repo_content' ''`
+DB_NAME=`get_config_value 'db_name' ''`
 
 echo -e "\nSetting private key to access repo."
 noroot cp /srv/config/certs-config/${REPO_KEY} /home/vagrant/.ssh/id_rsa
@@ -41,8 +36,10 @@ mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
 mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO wp@localhost IDENTIFIED BY 'wp';"
 mysql -u root --password=root ${DB_NAME} < /srv/database/backups/${DB_NAME}.sql
 
+
+cd ${VM_DIR}
 echo -e "\nReplacing production data into db tables, if set."
-cat ${VVV_CONFIG} | shyaml get-values-0 sites.${SITE_ESCAPED}.replace_strings  2> /dev/null|
+cat ${VVV_CONFIG} | shyaml get-values-0 sites.${SITE_ESCAPED}.custom.replace_strings  2> /dev/null|
     while IFS='' read -r -d '' key &&
           IFS='' read -r -d '' value; do
               echo "'$key' -> '$value'"
@@ -50,12 +47,12 @@ cat ${VVV_CONFIG} | shyaml get-values-0 sites.${SITE_ESCAPED}.replace_strings  2
     done
 
 echo -e "\nCopying media, if set."
-cat ${VVV_CONFIG} | shyaml get-values-0 sites.${SITE_ESCAPED}.media_folders  2> /dev/null|
+cat ${VVV_CONFIG} | shyaml get-values-0 sites.${SITE_ESCAPED}.custom.media_folders  2> /dev/null|
     while IFS='' read -r -d '' key &&
           IFS='' read -r -d '' value; do
               echo "'$key' -> '${VVV_PATH_TO_SITE}/$value'"
               [ -d "${VVV_PATH_TO_SITE}/$value" ] || noroot mkdir "${VVV_PATH_TO_SITE}/$value"
-		      noroot cp -r "$key/."  "${VVV_PATH_TO_SITE}/$value"
+		      noroot cp -r "$key/."  "${VVV_PATH_TO_SITE}/public_html/$value"
     done
 	
 echo -e "\nSetting NGINX logs."
@@ -68,4 +65,5 @@ cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.tmpl" "${VVV_PATH_TO_SITE}/p
 sed -i "s#{{DOMAINS_HERE}}#${DOMAINS}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 
 echo -e "\nSetting hosts file."
+cp -f "${VVV_PATH_TO_SITE}/provision/vvv-hosts.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-hosts"
 sed -i "s#{{DOMAINS_HERE}}#${DOMAINS}#" "${VVV_PATH_TO_SITE}/provision/vvv-hosts"
