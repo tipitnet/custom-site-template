@@ -53,13 +53,13 @@ cat ${VVV_CONFIG} | shyaml get-values-0 sites.${SITE_ESCAPED}.custom.media_folde
           IFS='' read -r -d '' value; do
               echo "'$key' -> '${VVV_PATH_TO_WP_SITE}/$value'"
               [ -d "${VVV_PATH_TO_WP_SITE}/$value" ] || noroot mkdir "${VVV_PATH_TO_WP_SITE}/$value"
-		      noroot cp -r "$key/."  "${VVV_PATH_TO_WP_SITE}/public_html/$value"
+		      noroot cp -r "$key/."  "${VVV_PATH_TO_WP_SITE}/$value"
     done
 	
 echo -e "\nSetting NGINX logs."
-mkdir -p ${VVV_PATH_TO_WP_SITE}/log
-touch ${VVV_PATH_TO_WP_SITE}/log/error.log
-touch ${VVV_PATH_TO_WP_SITE}/log/access.log
+mkdir -p ${VVV_PATH_TO_SITE}/log
+touch ${VVV_PATH_TO_SITE}/log/error.log
+touch ${VVV_PATH_TO_SITE}/log/access.log
 
 echo -e "\nSetting NGINX custom site file."
 cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
