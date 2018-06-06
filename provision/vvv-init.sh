@@ -7,6 +7,7 @@ REPO_KEY=`get_config_value 'repo_key' ''`
 REPO_CONTENT=`get_config_value 'repo_content' ''`
 DB_NAME=`get_config_value 'db_name' ''`
 VVV_PATH_TO_WP_SITE=${VVV_PATH_TO_SITE}/public_html
+PRODUCTION_DOMAIN=`get_config_value 'production_domain' ''`
 
 echo -e "\nSetting private key to access repo."
 noroot cp /srv/config/certs-config/${REPO_KEY} /home/vagrant/.ssh/id_rsa
@@ -63,7 +64,7 @@ touch ${VVV_PATH_TO_SITE}/log/access.log
 
 echo -e "\nSetting NGINX custom site file."
 cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
-sed -i "s#{{DOMAINS_HERE}}#${DOMAINS}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+sed -i "s#{{PRODUCTION_DOMAIN_HERE}}#${PRODUCTION_DOMAIN}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 
 echo -e "\nSetting hosts file."
 cp -f "${VVV_PATH_TO_SITE}/provision/vvv-hosts.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-hosts"
