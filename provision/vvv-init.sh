@@ -64,6 +64,7 @@ touch ${VVV_PATH_TO_SITE}/log/access.log
 
 echo -e "\nSetting NGINX custom site file."
 cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+sed -i "s#{{DOMAINS_HERE}}#${DOMAINS}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 sed -i "s#{{PRODUCTION_DOMAIN_HERE}}#${PRODUCTION_DOMAIN}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 
 echo -e "\nSetting hosts file."
