@@ -19,19 +19,13 @@ my-site:
   hosts:
     - my-site.test
 ```
-| Setting             | Value                |
-|---------------------|----------------------|
-| Domain              | my-site.test         |
-| Site Title          | my-site.test         |
-| DB Name             | my-site              |
-| Site Type           | Single               |
-| WP Version          | Latest               |
-| Repo Key            | repo-key             |
-| Repo Domain         | repo_domain          |
-| Production Domain   | production_domain    |
-| Repo Content        | repo_content         |
-| Media Folders       | media_folders        |
-| Replace Strings     | replace_strings      |
+| Setting    | Value       |
+|------------|-------------|
+| Domain     | my-site.test |
+| Site Title | my-site.test |
+| DB Name    | my-site     |
+| Site Type  | Single      |
+| WP Version | Latest      |
 
 ### Minimal configuration with custom domain and WordPress Nightly:
 
@@ -115,4 +109,38 @@ custom:
 ```
 Defines the DB name for the installation.
 
+```
+custom:
+    repo_content: the repo of your WP site.
+```
+Defines where to find the WP site code to clone through SSH.
 
+```
+custom:
+    repo-key: the name of your private key.
+```
+Defines the name of your private key to connect to the WP site repo pointed in "repo_content" variable. You should save your private key under VVV/config/certs-config.
+
+```
+custom:
+    repo_domain: the domain of the WP repo to clone.
+```
+Defines the domain of the WP repo to clone and it's related to "repo_content" variable. It's used to get the public key of the domain to add into the know hosts of your VM box before cloning.
+
+```
+custom:
+    production_domain: the domain of the production WP site.
+```
+Defines the domain of the production WP site to proxy media files from when you won't copy them locally.
+
+```
+custom:
+    media_folders: the folders to copy media files from.
+```
+On a source/destination basis, it defines a list of sets of media files to save in the cloned site. Notice that /srv/config points to VVV/config.
+
+```
+custom:
+    replace_strings: the strings to replace in the db.
+```
+On a "string to find"/"string to replace" basis, it defines a list of values to replace in all fields from all the tables of the WP database.
