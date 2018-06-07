@@ -19,13 +19,19 @@ my-site:
   hosts:
     - my-site.test
 ```
-| Setting    | Value       |
-|------------|-------------|
-| Domain     | my-site.test |
-| Site Title | my-site.test |
-| DB Name    | my-site     |
-| Site Type  | Single      |
-| WP Version | Latest      |
+| Setting             | Value                |
+|---------------------|----------------------|
+| Domain              | my-site.test         |
+| Site Title          | my-site.test         |
+| DB Name             | my-site              |
+| Site Type           | Single               |
+| WP Version          | Latest               |
+| Repo Key            | repo-key             |
+| Repo Domain         | repo_domain          |
+| Production Domain   | production_domain    |
+| Repo Content        | repo_content         |
+| Media Folders       | media_folders        |
+| Replace Strings     | replace_strings      |
 
 ### Minimal configuration with custom domain and WordPress Nightly:
 
